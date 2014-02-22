@@ -16,14 +16,14 @@ function onload() {
 * @return room_id and member_id and color
 */
 function create(theme,name){
-    var roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
+    roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
     // <input type="text" name="theme" value="">
     // <input type="text" name="oner_name" value="">
 
     //input theme name on html -> create
     //roomRef https://brainstorming.firebaseio.com/rooms/room_id
     var roomRef = roomsRef.push({theme:theme});
-    var membersRef =  roomRef.child('members');
+    membersRef =  roomRef.child('members');
     var color = random_color();
     var memberRef = membersRef.push({name:name,color:color,owner_flag:"true"});
 
@@ -31,7 +31,7 @@ function create(theme,name){
     return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:true};
 }
 
-// roomId = create('ddd', 'aaa').room_id;
+roomId = create('ddd', 'aaa').room_id;
 
 //redirect url
 //location.href = '/room/' + roomId;
@@ -43,21 +43,21 @@ function create(theme,name){
 function member(name){
     //var hash = window.location.hash
     var hash = roomId;
-    var roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
+    roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
     roomRef = roomsRef.child(hash);
     // <input type="text" name="txtb" value=""><br>
     // <input type="button" value="OK" onclick="tbox1()"><br>
 
     // input member name on html -> OK
     //var mem_name = document.js.txtb.value ;
-    var membersRef = roomRef.child('members');
+    membersRef = roomRef.child('members');
     var color = random_color();
     memberRef = membersRef.push({name:name,color:color,owner_flag:"false"});
 
     return {member_id:memberRef.name(),color:color,flag:false};
 }
 
-// var memberId = member('bbb').member_id;
+var memberId = member('bbb').member_id;
 
 /* create postits
 * @param pos_x
@@ -78,7 +78,7 @@ function create_postit(pos_x,pos_y,color,created_id){
     return {postit_id:postitRef.name(),holding_id:"NULL"};
 }
 
-//var postitId = create_postit("20","10","#ff00ff",memberId).postit_id;
+var postitId = create_postit("20","10","#ff00ff",memberId).postit_id;
 
 /*
 * Create new group information
@@ -94,7 +94,7 @@ function create_group(name,pos_x,pos_y,created_id){
     var width = 2.0;   // default length
     var height = 1.0;
     var groupRef = groupsRef.push({pos_x:pos_x,pos_y:pos_y,width:width,height:height,created_id:created_id,holding_id:"NULL",color:color });
-    return (group_id:groupRef.name(),holding_id:"NULL");
+    return {group_id:groupRef.name(),holding_id:"NULL"};
 }
 
 /*holding postit
@@ -187,6 +187,10 @@ function setup(owner_flag,time,number){
 */
 membersRef.on('child_added',function(snapshot){
    var member = snapshot.val();
+   var member_name = document.createElement("a");
+   member_name.innerHTML = member.name;
+   var member_list = document.getElementById('member_list');
+   member_list.appendChild(member_name);
 });
 
 /* random create color
