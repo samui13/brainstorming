@@ -1,4 +1,5 @@
 var roomRef;
+var postitRef;
 
 function onload() {
     hash = window.location.hash;
@@ -18,19 +19,23 @@ function create(theme,name){
     //roomRef https://brainstorming.firebaseio.com/rooms/room_id
     var roomRef = roomsRef.push({theme:theme});
     var membersRef =  roomRef.child('members');
-    membersRef.push({name:name});
+    var color = random_color();
+    var memberRef = membersRef.push({name:name,color:color,owner_flag:"true"});
 
     //return room_id
+    return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:true}
     return roomRef.name();
 }
 
-//roomId = create('ddd', 'aaa');
-//location.href = '/room/' + roomId
+roomId = create('ddd', 'aaa').room_id;
+
+//redirect url
+//location.href = '/room/' + roomId;
 
 // member's login
 function member(name){
     //var hash = window.location.hash
-    var hash = "JGONgtHFr_R5ocA-6kz";
+    var hash = roomId;
     var roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
     roomRef = roomsRef.child(hash);
     // <input type="text" name="txtb" value=""><br>
@@ -39,20 +44,14 @@ function member(name){
     // input member name on html -> OK
     //var mem_name = document.js.txtb.value ;
     var membersRef = roomRef.child('members');
+    var color = random_color();
+    var memberRef = membersRef.push({name:name,color:color,owner_flag:"false"});
 
-    //create color random
-    // use "https://github.com/eligrey/color.js/blob/master/color.js"
-    var hue = Math.random();
-    var saturation = 1.0;
-    var lightness = 0.5;
-    var color = Color.hsl(hue, saturation, lightness).hexTriplet();
-    membersRef.push({name:name,color:color});
-
-    return membersRef.name();
+    return {member_id:memberRef.name(),color:color,flag:false};
 }
 
-memberId = member('bbb');
-
+var memberId = member('bbb').member_id;
+console.log(memberId);
 
 // create postits
 function create_postit(pos_x,pos_y,color,created_id){
@@ -61,11 +60,24 @@ function create_postit(pos_x,pos_y,color,created_id){
     // postit.val = content
 
     // double click pos_x,pos_y on hthml ->
-    var postitsRef = roomRef.child('postits');
-    postitsRef.push({pos_x:pos_x, pos_y:pos_y, color:color, created_id:created_id, holding_id:"NULL"});
+    postitsRef = roomRef.child('postits');
+    var postitRef = postitsRef.push({pos_x:pos_x, pos_y:pos_y, color:color, created_id:created_id, holding_id:"NULL"});
+
+    return {postit_id:postitRef.name(),holding_id:"NULL"};
 }
 
-create_postit("20","10","#ff00ff","JGP0OBTfyIe33YllOal");
+var postitId = create_postit("20","10","#ff00ff",memberId).postit_id;
+
+//edit content
+function edit(postit_id,content){
+    //content = postit.val
+
+    //press enter postit_id content on html ->
+    var postitRef = postitsRef.child(postit_id);
+    postitRef.update({content:content});
+}
+
+edit(postitId,"test");
 
 // setup times and number
 function setup(){
@@ -79,16 +91,23 @@ function group(){
 
 }
 
+//random color
+function random_color(){
+    //create color random
+    // use "https://github.com/eligrey/color.js/blob/master/color.js"
+    var hue = Math.random();
+    var saturation = 1.0;
+    var lightness = 0.5;
+    var color = Color.hsl(hue, saturation, lightness).hexTriplet();
+
+    return color;
+}
 
 
 
 /* rooms{
     room_id:{
         theme,
-        owner:{
-            owner_id,
-            name
-        }
         members:{
             name,
             id,
