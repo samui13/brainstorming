@@ -31,7 +31,6 @@ function create(theme,name){
     //return room_id
     return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:true};
 }
-
 roomId = create('ddd', 'aaa').room_id;
 
 //redirect url
@@ -57,7 +56,6 @@ function member(name){
     groupsRef = roomRef.child('groups');
     return {member_id:memberRef.name(),color:color,flag:false};
 }
-
 var memberId = member('bbb').member_id;
 
 /* create postits
@@ -184,7 +182,7 @@ function setup(owner_flag,time,number){
 
 
 /* members child_add event
-*
+* insert member_name into member_list
 */
 membersRef.on('child_added',function(snapshot){
    var member = snapshot.val();
@@ -208,8 +206,31 @@ groupsRef.on('child_added',function(snapshot){
     var group = snapshot.val();
 });
 
+/* postits child_changed event
+*
+*/
 postitsRef.on('child_changed',function(snapshot){
-    console.log(name);
+    var postit = snapshot.val();
+    if(postit.holding_id != "NULL" ){
+    }
+    else{
+        element = document.getElementById(snapshot.name());
+        element.innerHTML = postit.context;
+    }
+});
+
+/* groups child_changed event
+*
+*/
+groupsRef.on('child_changed',function(snapshot){
+    var group = snapshot.val();
+    if(group.holding_id != "NULL"){
+    }
+    else{
+        element = document.getElementById(snapshot.name());
+        element.innerHTML = group.name;
+        //element style pos_x,pos_y
+    }
 });
 
 /* random create color
