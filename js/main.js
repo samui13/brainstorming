@@ -1,5 +1,7 @@
-var roomRef;
-var postitRef;
+var roomsRef;
+var postitsRef;
+var membersRef;
+var groupsRef;
 
 function onload() {
     hash = window.location.hash;
@@ -8,8 +10,11 @@ function onload() {
     }
 }
 
-
-// create new room
+/* create new room
+* @param theme
+* @param name
+* @return room_id and member_id and color
+*/
 function create(theme,name){
     var roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
     // <input type="text" name="theme" value="">
@@ -23,16 +28,18 @@ function create(theme,name){
     var memberRef = membersRef.push({name:name,color:color,owner_flag:"true"});
 
     //return room_id
-    return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:true}
-    return roomRef.name();
+    return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:true};
 }
 
-roomId = create('ddd', 'aaa').room_id;
+// roomId = create('ddd', 'aaa').room_id;
 
 //redirect url
 //location.href = '/room/' + roomId;
 
-// member's login
+/* member's login
+* @param name
+* @return member_id and color and flag
+*/
 function member(name){
     //var hash = window.location.hash
     var hash = roomId;
@@ -45,15 +52,20 @@ function member(name){
     //var mem_name = document.js.txtb.value ;
     var membersRef = roomRef.child('members');
     var color = random_color();
-    var memberRef = membersRef.push({name:name,color:color,owner_flag:"false"});
+    memberRef = membersRef.push({name:name,color:color,owner_flag:"false"});
 
     return {member_id:memberRef.name(),color:color,flag:false};
 }
 
-var memberId = member('bbb').member_id;
-console.log(memberId);
+// var memberId = member('bbb').member_id;
 
-// create postits
+/* create postits
+* @param pos_x
+* @param pos_y
+* @param color
+* @created_id
+* @return postit_id and holding_id
+*/
 function create_postit(pos_x,pos_y,color,created_id){
     // postit.position.x = pos_x
     // postit.position.y = pos_y
@@ -66,32 +78,120 @@ function create_postit(pos_x,pos_y,color,created_id){
     return {postit_id:postitRef.name(),holding_id:"NULL"};
 }
 
-var postitId = create_postit("20","10","#ff00ff",memberId).postit_id;
+//var postitId = create_postit("20","10","#ff00ff",memberId).postit_id;
 
-//edit content
-function edit(postit_id,content){
+/*
+* Create new group information
+* @param pos_x
+* @param pos_y
+* @param created_id
+* @return group_id and holding_id
+*/
+function create_group(name,pos_x,pos_y,created_id){
+    // width, height, color
+    groupsRef = roomRef.child('groups');
+    var color = random_color();
+    var width = 2.0;   // default length
+    var height = 1.0;
+    var groupRef = groupsRef.push({pos_x:pos_x,pos_y:pos_y,width:width,height:height,created_id:created_id,holding_id:"NULL",color:color });
+    return (group_id:groupRef.name(),holding_id:"NULL");
+}
+
+/*holding postit
+* @param member_id
+* @param postit_id
+*/
+function postit_hold(member_id,postit_id){
+    var postitRef = postitsRef.child(postit_id);
+    postitRed.update({holding_id:member_id});
+}
+
+/* holding group
+* @param member_id
+* @param postit_id
+*/
+function group_hold(member_id,group_id){
+    var groupRef = groupsRef.child(group_id);
+    groupRef.update({holding_id:member_id});
+}
+
+/* move postit
+* @param postit_id
+* @param pos_x
+* @param pos_y
+*/
+function postit_move(postit_id,pos_x,pos_y){
+    var postitRef = postitsRef.child(postit_id);
+    postitRef.update({pos_x:pos_x,pos_y:pos_y,holding_id:"NULL"});
+}
+
+/*
+* Move group (or postit)
+* @param group_id (or postit_id)
+* @param pos_x
+* @param pos_y
+*/
+function group_move(group_id,pos_x,pos_y){
+    var groupRef = groupsRef.child(group_id);
+    groupRef.update({pos_x:pos_x,pos_y:pos_y,holding_id:"NULL"});
+}
+
+/*edit content
+* @param postit_id
+* @param content
+* @return success
+*/
+function postit_edit(postit_id,content){
     //content = postit.val
 
     //press enter postit_id content on html ->
     var postitRef = postitsRef.child(postit_id);
-    postitRef.update({content:content});
+    postitRef.update({content:content,holding_id:"NULL"});
+    message = "success";
+
+    return message;
 }
 
-edit(postitId,"test");
+/* edit group name
+* @param name
+* @param group_id
+*/
+function group_edit(name,gruop_id){
+    var groupRef = groupsRef.child(group_id);
+    gruopRef.update({name:name,holding_id:"NULL"});
+    message = "success";
 
-// setup times and number
-function setup(){
+    return message;
+}
+
+/*
+* Setup times and number
+* @param owner_flag
+* @param time
+* @param number
+*/
+function setup(owner_flag,time,number){
     //if (user == owner)
     // setup times and number
+    if( owner_flag ){
+        var timeRef = room.child('time');
+        var numberRef = room.child('number');
+        timeRef.push({time:time});
+        numberRef.push({number:number});
+    }
 }
 
 
-// create group
-function group(){
+/* members child_add event
+*
+*/
+membersRef.on('child_added',function(snapshot){
+   var member = snapshot.val();
+});
 
-}
-
-//random color
+/* random create color
+* @return color
+*/
 function random_color(){
     //create color random
     // use "https://github.com/eligrey/color.js/blob/master/color.js"
@@ -138,3 +238,8 @@ function random_color(){
         number
     }
 */
+
+function test(){
+        var content = document.getElementById('content').value;
+        member(content);
+    }
