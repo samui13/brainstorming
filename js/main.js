@@ -26,6 +26,7 @@ function create(theme,name){
     membersRef =  roomRef.child('members');
     var color = random_color();
     var memberRef = membersRef.push({name:name,color:color,owner_flag:"true"});
+    groupsRef = roomRef.child('groups');
 
     //return room_id
     return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:true};
@@ -53,7 +54,7 @@ function member(name){
     membersRef = roomRef.child('members');
     var color = random_color();
     memberRef = membersRef.push({name:name,color:color,owner_flag:"false"});
-
+    groupsRef = roomRef.child('groups');
     return {member_id:memberRef.name(),color:color,flag:false};
 }
 
@@ -193,6 +194,24 @@ membersRef.on('child_added',function(snapshot){
    member_list.appendChild(member_name);
 });
 
+/* postits child_add event
+*
+*/
+postitsRef.on('child_added',function(snapshot){
+    var postit = snapshot.val();
+});
+
+/* groups child_add event
+*
+*/
+groupsRef.on('child_added',function(snapshot){
+    var group = snapshot.val();
+});
+
+postitsRef.on('child_changed',function(snapshot){
+    console.log(name);
+});
+
 /* random create color
 * @return color
 */
@@ -245,5 +264,5 @@ function random_color(){
 
 function test(){
         var content = document.getElementById('content').value;
-        member(content);
+        postit_edit(postitId,content);
     }
