@@ -31,8 +31,10 @@ function create(theme,name){
     //return room_id
     return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:true};
 }
-roomId = create('ddd', 'aaa').room_id;
 
+function click_create(){
+    roomId = create(document.getElementById('theme').value, document.getElementById('owner_name').value).room_id;
+}
 //redirect url
 //location.href = '/room/' + roomId;
 
@@ -42,7 +44,7 @@ roomId = create('ddd', 'aaa').room_id;
 */
 function member(name){
     //var hash = window.location.hash
-    var hash = roomId;
+    var hash = "-JGRWGpW0PnFqH8hC_rq";
     roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
     roomRef = roomsRef.child(hash);
     // <input type="text" name="txtb" value=""><br>
@@ -285,5 +287,5 @@ function random_color(){
 
 function test(){
         var content = document.getElementById('content').value;
-        postit_edit(postitId,content);
+        member(content);
     }
