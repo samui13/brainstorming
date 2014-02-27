@@ -1,204 +1,146 @@
-var roomsRef;
+//public variable
+/*var roomsRef;
 var postitsRef;
 var membersRef;
 var groupsRef;
 var flag;
 var roomRef;
-var hash;
+var hash;*/
 
-var cookieParam = { expires: 3, };
+//URL of firebase
+var firebaseUrl = 'https://brainstorming-data.firebaseio.com/rooms';
 
-function onload() {
-    hash = window.location.hash;
-    hash = hash.substr(2);
-    flag = $.cookie("flag");
-    console.log(flag);
-    if(flag == "true"){
+conDB = {
+    room:{},
+    roomsRef:{},
+    roomRef:{},
+    postitsRef:{},
+    membersRef:{},
+    groupsRef:{},
+    flag:{},
+    hash:{},
+    cookieParam:{
+        expires:3,
+        path:"/",
+    },
+};
+conDB.registfn = {};
+conDB.order = {};
+
+conDB.init = function(){
+    this.hash = window.location.hash;
+    this.hash = this.hash.substr(2);
+    this.flag = $.cookie("flag");
+    if(this.flag == "true" || this.flag == "false"){
+    }else if(this.hash.length>0){
+        $("#hover").css('display','block');
     }
-    else if (hash.length > 0) {
-        document.getElementById('hover').style.display = "inline";
-    }
-    else{
-    }
-    roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
-    roomRef = roomsRef.child(hash);
-    membersRef = roomRef.child('members');
-    postitsRef = roomRef.child('postits');
-    groupsRef = roomRef.child('groups');
-    roomRef.child('theme').once('value',function(snapshot){
+    this.roomsRef = new Firebase(firebaseUrl);
+    this.roomRef = this.roomsRef.child(this.hash);
+    this.membersRef = this.roomRef.child('members');
+    this.postitsRef = this.roomRef.child('postits');
+    this.groupsRef = this.roomRef.child('groups');
+    this.roomRef.child('theme').once('value',function(snapshot){
         var title = snapshot.val();
-        console.log(title);
-        $("#title").text(title);
-    });
-    /* members child_add event
-    * insert member_name into member_list
-    */
-    membersRef.on('child_added',function(snapshot){
-       var member = snapshot.val();
-       var member_name = document.createElement("li");
-       member_name.innerHTML = member.name;
-       var member_list = document.getElementById('member_list');
-       member_list.appendChild(member_name);
+        $('#title').text(title);
     });
 
-    /* postits child_add event
-    *
-    */
-    postitsRef.on('child_added',function(snapshot){
+
+    //read actions
+    conDB.registfn.memberAddEvent();
+    conDB.registfn.postitAddEvent();
+    conDB.registfn.groupAddEvent();
+    /*conDB.registfn.postitChangeEvent();
+    conDB.registfn.groupChangeEvent();*/
+};
+
+//memberAdd of read actions
+conDB.registfn.memberAddEvent = function(){
+    conDB.membersRef.on('child_added',function(snapshot){
+        var member = snapshot.val();
+        $("<li>"+member.name+"</li>").appendTo('#member_list');
+    });
+}
+
+//postitAdd of read actions
+conDB.registfn.postitAddEvent = function(){
+    conDB.postitsRef.on('child_added',function(snapshot){
         var postit_id = snapshot.name();
-        var postit = snapshot.val();
-        if(postit.holding_id != $.cookie("member_id")){
-            var t = PostIts.fn.create({text:'Hello'});
-            t.id = postit_id;
-            t.color = postit.color;
-            t.render($("#brestField"));
-            t.elem.offset({
-                top:postit.pos_x,
-                left:postit.pos_y,
-            })
-            t.setEnv();
-            t.changeCSS();
-            $('.content', $("#" + snapshot.name())).text(postit.content);
-        }
+        var postit_param = snapshot.val();
+        var postit = PostIts.fn.create({text:""});
+        postit.id = postit_id;
+        postit.color = postit_param.color;
+        postit.render($("#brestField"));
+        postit.elem.offset({
+            top:postit_param.pos_x,
+            left:postit_param.pos_y,
+        });
+        postit.setEnv();
+        postit.changeCSS();
+        $('.content',$("#" + snapshot.name())).text(postit_param.content);
     });
-
-    /* groups child_add event
-    *
-    */
-    groupsRef.on('child_added',function(snapshot){
-        var group = snapshot.val();
-    });
-
-    /* postits child_changed event
-    *
-    */
-    postitsRef.on('child_changed',function(snapshot){
-        var postit = snapshot.val();
-        console.log("B");
-        if(postit.holding_id == $.cookie("member_id")){
-        }
-        else{
-        $aaa = $('.content', $("#" + snapshot.name())).text(postit.content);
-        console.log($aaa);
-        }
-    });
-
-    /* groups child_changed event
-    *
-    */
-    groupsRef.on('child_changed',function(snapshot){
-        var group = snapshot.val();
-        if(group.holding_id != "NULL"){
-        }
-        else{
-            element = document.getElementById(snapshot.name());
-            element.innerHTML = group.name;
-            //element style pos_x,pos_y
-        }
-    });
-
 }
 
-/* create new room
-* @param theme
-* @param name
-* @return room_id and member_id and color
-*/
-function create(theme,name){
-    roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
-    // <input type="text" name="theme" value="">
-    // <input type="text" name="oner_name" value="">
-
-    //input theme name on html -> create
-    //roomRef https://brainstorming.firebaseio.com/rooms/room_id
-    var roomRef = roomsRef.push({theme:theme});
-    membersRef =  roomRef.child('members');
-    var color = random_color();
-    var memberRef = membersRef.push({name:name,color:color,owner_flag:"true"});
-    groupsRef = roomRef.child('groups');
-
-    //return room_id
-    return {room_id:roomRef.name(),member_id:memberRef.name(),color:color,flag:"true"};
-}
-function click_create(){
-    room = create(document.getElementById('theme').value, document.getElementById('owner_name').value);
-    roomId = room.room_id;
-    cookieParam.path = './ymnk/#/' + roomId;
-    $.cookie("member_id",room.member_id,cookieParam);
-    $.cookie("color",room.color,cookieParam);
-    $.cookie("flag",room.flag,cookieParam);
-    roomsRef.on('child_added',function(){
-        //redirect url
-        location.href = './ymnk/#/' + roomId;
+//groupAdd of read actons
+conDB.registfn.groupAddEvent = function(){
+    conDB.groupsRef.on('child_added',function(snapshot){
+        var group_id = snapshot.name();
+        var group_param = snapshot.val();
+        var group = Groups.fn.create({text:""});
+        group.id = group_id;
+        group.color = group_param.color;
+        group.render($("#brestField"));
+        group.elem.offset({
+            top:group_param.pos_x,
+            left:group_param.pos_y,
+        });
+        group.setEnv();
+        group.changeCSS();
+        $('.footer',$("#" + snapshot.name())).text(group_param.name);
     })
 }
 
-/* member's login
-* @param name
-* @return member_id and color and flag
-*/
-function member(name){
-    // <input type="text" name="txtb" value=""><br>
-    // <input type="button" value="OK" onclick="tbox1()"><br>
 
-    // input member name on html -> OK
-    //var mem_name = document.js.txtb.value ;
+//click actions
+//createRoom of click actions
+conDB.order.createRoom = function(){
+    conDB.roomsRef = new Fierebase(firebaseUrl);
+    var roomRef = conDB.roomsRef.push({theme:$("#theme").val()});
+    conDB.membersRef = roomRef.child('members');
     var color = random_color();
-    memberRef = membersRef.push({name:name,color:color,owner_flag:"false"});
-    groupsRef = roomRef.child('groups');
-    return {member_id:memberRef.name(),color:color,flag:"false"};
+    var memberRef = conDB.membersRef.push({name:$("#owner_name").val(),color:color,owner_flag:"true"});
 
+    conDB.roomsRef.on('child_added',function(){
+        conDB.hash = roomRef.name();
+        conDB.cookieParam.path = "./room/#/" + conDB.hash;
+        $.cookie("member_id",memberRef.name(),conDB.cookieParam);
+        $.cookie("color",color,conDB.cookieParam);
+        $.cookie("flag","true",conDB.cookieParam);
+        location.href = "./room/#/" + conDB.hash;
+    })
 }
 
-function click_room_in(){
-    member = member(document.getElementById('user_name').value);
-    cookieParam.path = './ymnk/#/' + hash;
-    $.cookie("member_id",member.member_id,cookieParam);
-    $.cookie("color",member.color,cookieParam);
-    $.cookie("flag",member.flag);
-    document.getElementById('hover').style.display = "none";
-}
-
-
-/* create postits
-* @param pos_x
-* @param pos_y
-* @param color
-* @created_id
-* @return postit_id and holding_id
-*/
-function create_postit(pos_x,pos_y,color,created_id){
-    // postit.position.x = pos_x
-    // postit.position.y = pos_y
-    // postit.val = content
-
-    // double click pos_x,pos_y on hthml ->
-    var postitRef = postitsRef.push({pos_x:pos_x, pos_y:pos_y, color:color, created_id:created_id, holding_id:created_id});
-
-    return {postit_id:postitRef.name(),holding_id:created_id};
-}
-
-//var postitId = create_postit("20","10","#ff00ff",memberId).postit_id;
-
-/*
-* Create new group information
-* @param pos_x
-* @param pos_y
-* @param created_id
-* @return group_id and holding_id
-*/
-function create_group(pos_x,pos_y,width,height,created_id){
-    // width, height, color
-    groupsRef = roomRef.child('groups');
+//enterRoom of click actions
+conDB.order.enterRoom = function(){
     var color = random_color();
-    var groupRef = groupsRef.push({pos_x:pos_x,pos_y:pos_y,width:width,height:height,created_id:created_id,holding_id:"NULL",color:color });
-    return {group_id:groupRef.name(),holding_id:"NULL"};
+    conDB.membersRef = conDB.membersRef.push({name:$("#user_name").val(),owner_flag:"false"});
+    conDB.cookieParam.path = './room/#/' + conDB.hash;
+    $.cookie("member_id",conDB.membersRef.name(),conDB.cookieParam);
+    $.cookie("color",color,conDB.cookieParam);
+    $.cookie("flag","false",conDB.cookieParam);
+    $('#hover').css("display","none");
 }
 
-/*holding postit
-* @param member_id
-* @param postit_id
-*/
+//createPostit of click actions
+conDB.order.createPostit = function(){
+    var postitRef = conDB.postitsRef.push({pos_x:0,pos_y:0,color:$.cookie("color"),create_id:$.cookie("member_id"),holding_id:"NULL"});
+}
+
+//createGroup of click actions
+conDB.order.createGroup = function(){
+    var groupRef = conDB.groupsRef.push({pos_x:0,pos_y:0,width:200,height:100,create_id:$.cookie("member_id"),holding_id:"NULL",color:$.cookie("color")});
+}
+
 function postit_hold(postit_id,member_id){
     var postitRef = postitsRef.child(postit_id);
     postitRef.update({holding_id:member_id});
@@ -330,8 +272,3 @@ function random_color(){
         number
     }
 */
-
-function test(){
-        var content = document.getElementById('content').value;
-        member(content);
-    }

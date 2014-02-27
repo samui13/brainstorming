@@ -6,8 +6,8 @@ userUI.fn.orderField = function(){
 
 userUI.addPostIt = function(){
 //    userUI.fn.orderField();
-    var t = PostIts.fn.create({text:'Hello'});
-    postit = create_postit(0,0,$.cookie("color"),$.cookie("member_id"));
+    var t = PostIts.fn.create({text:''});
+    postit = conDB.order.create_postit(0,0,$.cookie("color"),$.cookie("member_id"));
     t.id = postit.postit_id;
     t.render($("#brestField"));
     t.setEnv();

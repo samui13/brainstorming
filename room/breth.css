@@ -23,7 +23,7 @@
 .footer h3{
     margin-top:0px;
 }
-#brestField .group{
+#brestField .draggableGroup{
     z-index:2;
     width:300px;
     height:300px;

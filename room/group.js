@@ -62,7 +62,7 @@ Groups.droppableOpt = {
     }
 };
 Groups.__template = '\
-<div id="group-{{data.id}}" class="group droppableGroup draggableGroup" style="">\n\
+<div id="{{data.id}}" class="group droppableGroup draggableGroup">\n\
 <div class="footer" contenteditable="true"><h3>{{data.tag}}</h3></div>\n\
 </div>\n\
 ';
@@ -91,7 +91,7 @@ Groups.fn.create = function(params){
 	obj.elem = $(raw);
 	obj.elem.appendTo(elem);
 	obj.x = obj.elem.offset().left;
-	obj.y = obj.elem.offset().right;
+	obj.y = obj.elem.offset().top;
     };
     obj.setEnv = function(){
 	obj.elem.droppable(Groups.droppableOpt);
@@ -111,6 +111,11 @@ Groups.fn.create = function(params){
 	});
 	///obj.elem.draggable('disable');
     }
+    obj.changeCSS = function(){
+	obj.elem.css('position','absolute');
+	console.log(obj.y);
+	obj.elem.offset({top:obj.y,left:obj.x});
+    };
     Groups.list.push(obj);
     return obj;
     

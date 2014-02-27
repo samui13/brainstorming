@@ -7,7 +7,7 @@
     -->
     <script src="https://cdn.firebase.com/v0/firebase.js"></script>
     <script type="text/javascript" src="../js/color.js"></script>
-    <script src="./jquery.js"></script>
+    <script src="../js/jquery.js"></script>
     <script src="./jquery-ui.js"></script>
     <script src="./mustache.js"></script>
     <script src="./userUI.js"></script>
@@ -19,13 +19,13 @@
     <link rel="stylesheet" type="text/css" href="./breth.css" media="all">
       <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"></link>
   </head>
-  <body onload="onload()">
+  <body onload="conDB.init()">
     <table id="hover">
       <tr id="box">
         <td style="text-align: center; vertical-align: middle;">
           ユーザー名<br>
           <input type="text" name="username" class="username" id="user_name" value=""/><br>
-          <input type="button" class="button" id="room_in_button" value="入室" onclick="click_room_in()" />
+          <input type="button" class="button" id="enter_room_button" value="入室" onclick="conDB.order.enterRoom();" />
         </td>
       </tr>
     </table>
@@ -34,8 +34,8 @@
       <div class="row">
 	<div class="col-md-2">
 	  <ul>
-	    <li><button type="button" onclick="userUI.addPostIt();" class="btn btn-success">CreatePostIt</button></li>
-	    <li><button type="button" onclick="userUI.addGroup();" class="btn btn-info">CreateGroup</button></li>
+	    <li><button type="button" onclick="conDB.order.createPostit();" class="btn btn-success">CreatePostIt</button></li>
+	    <li><button type="button" onclick="conDB.order.createGroup();" class="btn btn-info">CreateGroup</button></li>
 	  </ul>
 	  <div id="members">
 	    <p>メンバー</p>
