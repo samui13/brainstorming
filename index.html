@@ -1,22 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>HTML5, CSS3 and JavaScript demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Top Page</title>
   <script src="https://cdn.firebase.com/v0/firebase.js"></script>
   <script type="text/javascript" src="js/color.js"></script>
   <script src="js/main.js" type="text/javascript"></script>
+  <script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" type="text/css" href="css/index.css" media="all">
+  <link rel="stylesheet" type="text/css" href="css/screen.css" media="all">
 </head>
 <body>
 <!-- Start your code here -->
 
-<p>Hello Weaver!</p>
-<input type="text" name="content" id="content" value="">
-<input type="button" name="send" value="追加" onclick="test()">
-<div id="member_list">
-	<a>name</a>
-</div>
-<a id="test">test</a>
-
+  <script type="text/javascript">
+  <!--
+  // 入力フォームが空欄かどうかチェック
+    function checkForm() {
+	  if ((document.form.theme.value == "") && (document.form.username.value == "")) {
+        alert('ぶれすとテーマとユーザ名を入力してください');
+        document.form.theme.focus();
+        return false;
+      } else if (document.form.theme.value == "") {
+        alert('ぶれすとテーマを入力してください');
+        document.form.theme.focus();
+        return false;
+      } else if (document.form.username.value == "") {
+        alert('ユーザ名を入力してください');
+        document.form.username.focus();
+        return false;
+      } else {
+        return true;
+      }
+   }
+  // -->
+  </script>
+  <div class="container">
+  	<div href="#" id="IESupport" class="starburst2"><span><span><span><br>IE対応！</span></span></span></div>
+        <h1 class="title">ブレストツクールXP</h1>
+        <h2 class="subtitle">みんなのアイデア死ぬ前に</h2>
+        <form name="form" method="post" action="" onSubmit="return checkForm()">
+         <input type="text" name="theme" class="theme" id="theme" value="" placeholder="ブレストのお題を入れてね♩"/><br>
+         <input type="text" name="username" class="username" id="owner_name" value="" placeholder="名前を入力！"/><br>
+         <input type="button" class="button" id="create_button" value="スタート" onclick="click_create()" />
+         </form>
+  </div>
 <!-- End your code here -->
 </body>
 </html>

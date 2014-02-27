@@ -81,6 +81,33 @@ conDB.registfn.postitAddEvent = function(){
     });
 }
 
+<<<<<<< HEAD
+function click_create(){
+    roomId = create(document.getElementById('theme').value, document.getElementById('owner_name').value).room_id;
+}
+//redirect url
+//location.href = '/room/' + roomId;
+
+/* member's login
+* @param name
+* @return member_id and color and flag
+*/
+function member(name){
+    //var hash = window.location.hash
+    var hash = "-JGRWGpW0PnFqH8hC_rq";
+    roomsRef = new Firebase('https://brainstorming.firebaseio.com/rooms');
+    roomRef = roomsRef.child(hash);
+    // <input type="text" name="txtb" value=""><br>
+    // <input type="button" value="OK" onclick="tbox1()"><br>
+
+    // input member name on html -> OK
+    //var mem_name = document.js.txtb.value ;
+    membersRef = roomRef.child('members');
+    var color = random_color();
+    memberRef = membersRef.push({name:name,color:color,owner_flag:"false"});
+    groupsRef = roomRef.child('groups');
+    return {member_id:memberRef.name(),color:color,flag:false};
+=======
 //groupAdd of read actons
 conDB.registfn.groupAddEvent = function(){
     conDB.groupsRef.on('child_added',function(snapshot){
@@ -111,6 +138,7 @@ conDB.registfn.postitChangeEvent = function () {
             left:postit_param.pos_x + postit_parent.offset().left,
         });
     })
+>>>>>>> a15eed683b8331304ec5e6dcfb1cb006c14548d7
 }
 
 //postit change actions
@@ -295,4 +323,13 @@ function random_color(){
         time
         number
     }
+<<<<<<< HEAD
 */
+
+function test(){
+        var content = document.getElementById('content').value;
+        member(content);
+    }
+=======
+*/
+>>>>>>> a15eed683b8331304ec5e6dcfb1cb006c14548d7
