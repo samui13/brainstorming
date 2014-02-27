@@ -1,7 +1,7 @@
 #brestField{
     z-index:1;
     background-color: #53C8E7;
-    // けせ
+    position:relative;
     width:800px;
     height:1000px;
 }

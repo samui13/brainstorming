@@ -50,8 +50,8 @@ conDB.init = function(){
     conDB.registfn.memberAddEvent();
     conDB.registfn.postitAddEvent();
     conDB.registfn.groupAddEvent();
-    /*conDB.registfn.postitChangeEvent();
-    conDB.registfn.groupChangeEvent();*/
+    conDB.registfn.postitChangeEvent();
+    //conDB.registfn.groupChangeEvent();
 };
 
 //memberAdd of read actions
@@ -100,6 +100,34 @@ conDB.registfn.groupAddEvent = function(){
     })
 }
 
+conDB.registfn.postitChangeEvent = function () {
+    conDB.postitsRef.on('child_changed',function(snapshot){
+        var postit_id = snapshot.name();
+        var postit_param = snapshot.val();
+        var postit = $("#"+postit_id);
+        var postit_parent = postit.parent();
+        $("#"+postit_id).offset({
+            top:postit_param.pos_y + postit_parent.offset().top,
+            left:postit_param.pos_x + postit_parent.offset().left,
+        });
+    })
+}
+
+//postit change actions
+conDB.registfn.postitHold = function(postit_id){
+    var postitRef = conDB.postitsRef.child(postit_id);
+    postitRef.update({holding_id:$.cookie("member_id")});
+}
+
+conDB.registfn.postitDrag = function(postit_id,pos_x,pos_y){
+    var postitRef = conDB.postitsRef.child(postit_id);
+    postitRef.update({pos_x:pos_x,pos_y:pos_y});
+}
+
+conDB.registfn.postitRelease = function(postit_id,pos_x,pos_y){
+    var postitRef = conDB.postitsRef.child(postit_id);
+    postitRef.update({pos_x:pos_x,pos_y:pos_y,holding_id:"NULL"});
+}
 
 //click actions
 //createRoom of click actions
@@ -141,10 +169,6 @@ conDB.order.createGroup = function(){
     var groupRef = conDB.groupsRef.push({pos_x:0,pos_y:0,width:200,height:100,create_id:$.cookie("member_id"),holding_id:"NULL",color:$.cookie("color")});
 }
 
-function postit_hold(postit_id,member_id){
-    var postitRef = postitsRef.child(postit_id);
-    postitRef.update({holding_id:member_id});
-}
 
 /* holding group
 * @param member_id

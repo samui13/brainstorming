@@ -9,9 +9,27 @@ PostIts.__template = '\
 PostIts.draggableOpt = {
     // あとでかかないかも
     start:function(e,ui){
-	var obj = $("#"+$(ui.helper[0]).get(0).id);
-	var offset = obj.parent().offset();
-	var obj = $("#"+obj.get(0).id)
+    	var id = $(ui.helper[0]).get(0).id;
+		var obj = $("#"+id);
+		conDB.registfn.postitHold(id);
+    },
+    drag:function(e,ui){
+    	var id = $(ui.helper[0]).get(0).id;
+    	var obj = $("#" + id);
+		var parent_offset = obj.parent().offset();
+		var offset = obj.offset();
+		var pos_x = offset.left - parent_offset.left;
+		var pos_y = offset.top - parent_offset.top;
+    	conDB.registfn.postitDrag(id,pos_x,pos_y);
+    },
+    stop:function(e,ui){
+    	var id = $(ui.helper[0]).get(0).id;
+		var obj = $("#"+id);
+		var parent_offset = obj.parent().offset();
+		var offset = obj.offset();
+		var pos_x = offset.left - parent_offset.left;
+		var pos_y = offset.top - parent_offset.top;
+		conDB.registfn.postitRelease(id,pos_x,pos_y);
     },
     zIndex:4,
 };
@@ -62,9 +80,7 @@ PostIts.fn.create = function(params){
 	    obj.elem.draggable('disable');
 	});
 	obj.elem.on('keyup',function(e){
-		postit_hold(obj.id,$.cookie("member_id"));
 		console.log($(this).children(".content").text());
-		postit_edit(obj.id,$(this).children(".content").text());
 	})
     };
     obj.changeCSS = function(){
