@@ -67,10 +67,11 @@ conDB.registfn.postitAddEvent = function(){
     conDB.postitsRef.on('child_added',function(snapshot){
         var postit_id = snapshot.name();
         var postit_param = snapshot.val();
-        var postit = PostIts.fn.create({text:""});
+        var postit = PostIts.fn.create({text:"New"});
         postit.id = postit_id;
         postit.color = postit_param.color;
         postit.render($("#brestField"));
+
         postit.elem.offset({
             top:postit_param.pos_x,
             left:postit_param.pos_y,
@@ -161,12 +162,27 @@ conDB.order.enterRoom = function(){
 
 //createPostit of click actions
 conDB.order.createPostit = function(){
-    var postitRef = conDB.postitsRef.push({pos_x:0,pos_y:0,color:$.cookie("color"),create_id:$.cookie("member_id"),holding_id:"NULL"});
+    var postitRef = conDB.postitsRef.push({
+	pos_x:0,
+	pos_y:0,
+	color:$.cookie("color"),
+	create_id:$.cookie("member_id"),
+	holding_id:"NULL"
+    });
+
 }
 
 //createGroup of click actions
 conDB.order.createGroup = function(){
-    var groupRef = conDB.groupsRef.push({pos_x:0,pos_y:0,width:200,height:100,create_id:$.cookie("member_id"),holding_id:"NULL",color:$.cookie("color")});
+    var groupRef = conDB.groupsRef.push({
+	pos_x:0,
+	pos_y:0,
+	width:200,
+	height:100,
+	create_id:$.cookie("member_id"),
+	holding_id:"NULL",
+	color:$.cookie("color")
+    });
 }
 
 

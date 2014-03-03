@@ -43,7 +43,6 @@ Groups.droppableOpt = {
 	console.log(obj);
     },
     over:function(e,ui){
-
 	/*
 	ui.draggable.appendTo($("#brestField"));
 	var obj = ui.draggable.appendTo($("#brestField"));
