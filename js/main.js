@@ -132,7 +132,7 @@ conDB.registfn.postitRelease = function(postit_id,pos_x,pos_y){
 //click actions
 //createRoom of click actions
 conDB.order.createRoom = function(){
-    conDB.roomsRef = new Fierebase(firebaseUrl);
+    conDB.roomsRef = new Firebase(firebaseUrl);
     var roomRef = conDB.roomsRef.push({theme:$("#theme").val()});
     conDB.membersRef = roomRef.child('members');
     var color = random_color();

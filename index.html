@@ -43,7 +43,7 @@
         <form name="form" method="post" action="" onSubmit="return checkForm()">
          <input type="text" name="theme" class="theme" id="theme" value="" placeholder="ブレストのお題を入れてね♩"/><br>
          <input type="text" name="username" class="username" id="owner_name" value="" placeholder="名前を入力！"/><br>
-         <input type="button" class="button" id="create_button" value="スタート" onclick="click_create()" />
+         <input type="button" class="button" id="create_button" value="スタート" onclick="conDB.order.createRoom()" />
          </form>
   </div>
 <!-- End your code here -->
